@@ -1,0 +1,22 @@
+* shrill
+
+a utility for switching monitor outputs on sway or X11, with refresh
+rate configuration.
+
+requires [[https://github.com/json-c/json-c][json-c]]
+
+** why?
+
+i use a thinkpad, and its display sucks. i have a second monitor that is
+marginally better, and i prefer it. my desk is too small to care anyway.
+
+*** why not use the APIs directly?
+
+because i want this thing to work correctly, and to be easily
+tweakable. this is, effectively, a wrapper.
+
+*** ...and why a single file?
+
+i think single-file C programs are as beautiful as the haiku or the
+shitpost. in an ideal world, i would be a single C file inside of
+a computer.
