@@ -278,27 +278,40 @@ static void swaySwitchToOutput(const char *target, const char *rate,
  * The "primary" designation is used to determine the active output.
  */
 
+static regex_t x11_regex;      /**< Compiled regex for parsing xrandr output. */
+static int x11_regex_compiled; /**< Non-zero if the regex has been compiled. */
+
+/**
+ * @brief Releases resources allocated by the X11 backend.
+ *
+ * Frees the compiled regex to avoid memory leaks. Called automatically
+ * at program exit via atexit().
+ */
+static void x11Cleanup(void) {
+  if (x11_regex_compiled) {
+    regfree(&x11_regex);
+    x11_regex_compiled = 0;
+  }
+}
+
 /**
  * @brief Returns a compiled regex for parsing xrandr connected lines.
  *
  * The regex is compiled once and reused on subsequent calls.
  */
 static regex_t *x11GetOutputRegex(void) {
-  static regex_t regex;
-  static int compiled = 0;
-
-  if (!compiled) {
+  if (!x11_regex_compiled) {
     static const char Pat[] = "^([A-Za-z0-9_-]+) connected( primary)?";
-    int err = regcomp(&regex, Pat, REG_EXTENDED);
+    int err = regcomp(&x11_regex, Pat, REG_EXTENDED);
     if (err != 0) {
       char msg[256];
-      regerror(err, &regex, msg, sizeof(msg));
+      regerror(err, &x11_regex, msg, sizeof(msg));
       (void)fprintf(stderr, "regex error: %s\n", msg);
       exit(EXIT_FAILURE);
     }
-    compiled = 1;
+    x11_regex_compiled = 1;
   }
-  return &regex;
+  return &x11_regex;
 }
 
 /**
@@ -659,6 +672,7 @@ int main(int argc, char *argv[]) {
   } else if (getenv("DISPLAY")) {
     get_outputs = x11GetOutputs;
     switch_to_output = x11SwitchToOutput;
+    (void)atexit(x11Cleanup);
   } else {
     (void)fprintf(stderr, "Error: No supported display server detected.\n");
     return EXIT_FAILURE;
