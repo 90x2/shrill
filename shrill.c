@@ -558,6 +558,12 @@ static void cmdMenu(OutputList *out_list, const char *rate) {
     if (fgets(rbuf, sizeof(rbuf), stdin)) {
       rbuf[strcspn(rbuf, "\n")] = '\0';
       if (rbuf[0] != '\0') {
+        char *end;
+        double val = strtod(rbuf, &end);
+        if (end == rbuf || *end != '\0' || val <= 0) {
+          (void)fprintf(stderr, "Invalid rate\n");
+          exit(EXIT_FAILURE);
+        }
         user_rate = strdup(rbuf);
       }
     }
@@ -680,6 +686,15 @@ int main(int argc, char *argv[]) {
 
   struct Args args = {.cmd_ = CmdNone, .output_ = NULL, .rate_ = NULL};
   argp_parse(&Argp, argc, argv, 0, NULL, &args);
+
+  if (args.rate_) {
+    char *end;
+    double val = strtod(args.rate_, &end);
+    if (end == args.rate_ || *end != '\0' || val <= 0) {
+      (void)fprintf(stderr, "Error: invalid rate '%s'\n", args.rate_);
+      return EXIT_FAILURE;
+    }
+  }
 
   OutputList out_list = get_outputs();
   if (out_list.len_ == 0) {
