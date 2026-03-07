@@ -1,3 +1,20 @@
+/**
+ * Copyright (C) 2026 90x2
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * under the terms of the GNU General Public License as published
+ * the Free Software Foundation, either version 3 of the License,
+ * (at your option) any later version.
+ *
+ * program is distributed in the hope that it will be useful,
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Public License for more details.
+ *
+ * should have received a copy of the GNU General Public License
+ * with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #define _GNU_SOURCE
 #include <argp.h>
 #include <ctype.h>
